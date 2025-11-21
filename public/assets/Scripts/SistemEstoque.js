@@ -548,9 +548,6 @@ function renderProductList(filterText = '') {
     updateAlertsAndSales();
 }
 
-// ATENÇÃO: Essa função de Inline Edit foi removida/adaptada pois editar direto no input 
-// sem botão de salvar é arriscado com API. Melhor usar o Modal ou o adjustQty.
-
 async function adjustQty(index, delta) {
     const product = products[index];
     const before = product.quantidade || 0;
