@@ -44,7 +44,7 @@ router.post('/register', validarToken, isAdmin, async (req, res) => {
 
         // === 6. ENVIAR E-MAIL DE BOAS-VINDAS ===
         try {
-            const loginLink = `http://localhost:3000/Login.html`;
+            const loginLink = `https://vtznosql.onrender.com/Login.html`;
             
             const subject = 'Bem-vindo à VTZ Agronegócios - Acesso Criado';
             const html = `
