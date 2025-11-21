@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     renderLogs();
     updateAlertsAndSales();
     setupOnlineStatus();
+    loadLogsFromAPI();
+    loadSalesFromAPI();
 });
 
 function checkLogin() {
@@ -25,10 +27,10 @@ function checkLogin() {
     // --- ATUALIZA AS VARIÁVEIS GLOBAIS ---
     authToken = token;
     currentUserRole = role;
-    
+
     // AQUI ESTAVA FALTANDO: Atualiza a identidade para o Log usar!
     if (userEmail) {
-        currentUser = userEmail; 
+        currentUser = userEmail;
     }
 
     // --- ATUALIZA O CABEÇALHO ---
@@ -78,8 +80,8 @@ const KEY_SALES = 'vtz_vendas';
 // Produtos agora começam vazios até chegarem da API
 let products = [];
 let syncQueue = JSON.parse(localStorage.getItem(KEY_SYNC_QUEUE) || '[]') || []; // Carrega a fila de sincronização
-let logs = JSON.parse(localStorage.getItem(KEY_LOGS) || '[]') || [];
-let sales = JSON.parse(localStorage.getItem(KEY_SALES) || '[]') || [];
+let logs = []; 
+let sales = [];
 
 let storedUser = localStorage.getItem('vtz_user');
 let currentUserRole = localStorage.getItem('userRole') || 'funcionario';
@@ -156,8 +158,46 @@ async function loadProductsFromAPI() {
     }
 }
 
+// --- CARREGAR LOGS DO BANCO ---
+async function loadLogsFromAPI() {
+    try {
+        const res = await fetch('/api/logs', { headers: getAuthHeaders() });
+        if (res.ok) {
+            logs = await res.json(); // Pega do Mongo
+            // Atualiza o cache local para funcionar offline depois
+            localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
+            renderLogs();
+            console.log(`📜 ${logs.length} logs carregados.`);
+        }
+    } catch (error) {
+        console.warn("Offline: Carregando logs do cache local");
+        // Fallback: Se der erro na API, usa o que tem no navegador
+        logs = JSON.parse(localStorage.getItem(KEY_LOGS) || '[]');
+        renderLogs();
+    }
+}
+
+// --- CARREGAR VENDAS DO BANCO ---
+async function loadSalesFromAPI() {
+    try {
+        const res = await fetch('/api/vendas', { headers: getAuthHeaders() });
+        if (res.ok) {
+            sales = await res.json(); // Pega do Mongo
+            localStorage.setItem(KEY_SALES, JSON.stringify(sales));
+            updateAlertsAndSales(); // Atualiza a lista lateral
+            console.log(`💰 ${sales.length} vendas carregadas.`);
+        }
+    } catch (error) {
+        console.warn("Offline: Carregando vendas do cache local");
+        sales = JSON.parse(localStorage.getItem(KEY_SALES) || '[]');
+        updateAlertsAndSales();
+    }
+}
+
+
+
 async function syncProductToAPI(produto, isNew = false) {
-    
+
     // 1. Prepara a requisição
     const url = isNew ? API_URL : `${API_URL}/${produto._id || produto.id}`;
     const method = isNew ? 'POST' : 'PUT';
@@ -337,17 +377,17 @@ function loadProductsFromCache() {
 function esc(s) { if (s === null || s === undefined) return ''; return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
 async function addLogStructured(type, message, before = null, after = null, meta = null) {
-    const entry = { 
-        id: uid('log'), 
-        ts: new Date().toISOString(), 
-        user: currentUser, 
-        type, 
-        message, 
-        before, 
-        after, 
-        meta 
+    const entry = {
+        id: uid('log'),
+        ts: new Date().toISOString(),
+        user: currentUser,
+        type,
+        message,
+        before,
+        after,
+        meta
     };
-    
+
     // 1. Tenta salvar na API (Audit Trail)
     if (navigator.onLine) {
         try {
@@ -372,11 +412,11 @@ function addLog(msg) { addLogStructured('info', msg); }
 function renderLogs() {
     const el = document.getElementById('logList');
     if (!el) return;
-    
+
     el.innerHTML = logs.map(l => {
         const time = new Date(l.ts).toLocaleString();
         let extraHtml = '';
-        
+
         if (l.before !== null || l.after !== null) {
             extraHtml = `
                 <div class="log-changes">
@@ -389,10 +429,10 @@ function renderLogs() {
         // Ícone baseado no tipo de ação
         let icon = 'bx-info-circle';
         let colorClass = 'info';
-        if(l.type.includes('venda')) { icon = 'bx-dollar-circle'; colorClass = 'success'; }
-        if(l.type.includes('edit')) { icon = 'bx-pencil'; colorClass = 'warn'; }
-        if(l.type.includes('remover')) { icon = 'bx-trash'; colorClass = 'danger'; }
-        if(l.type.includes('import')) { icon = 'bx-import'; colorClass = 'primary'; }
+        if (l.type.includes('venda')) { icon = 'bx-dollar-circle'; colorClass = 'success'; }
+        if (l.type.includes('edit')) { icon = 'bx-pencil'; colorClass = 'warn'; }
+        if (l.type.includes('remover')) { icon = 'bx-trash'; colorClass = 'danger'; }
+        if (l.type.includes('import')) { icon = 'bx-import'; colorClass = 'primary'; }
 
         return `
             <div class="log-card ${colorClass}">
@@ -472,7 +512,7 @@ function updateAlertsAndSales() {
         div.onclick = () => { currentSearch = p.nome; document.getElementById('searchInput').value = p.nome; renderProductList(p.nome); };
         alertsEl.appendChild(div);
     });
-    
+
     stagnantItems.slice(0, 5).forEach(p => {
         const div = document.createElement('div');
         div.className = 'alert-item warn'; // 
@@ -618,7 +658,7 @@ function closeAddModal() {
 // FUNÇÃO SALVAR CORRIGIDA
 async function saveProduct() {
     console.log("🟢 Botão Salvar clicado. Processando...");
-    
+
     const nome = document.getElementById('field_nome').value.trim();
     const peso = document.getElementById('field_peso').value.trim();
     const localizacao = document.getElementById('field_local').value.trim();
@@ -628,9 +668,9 @@ async function saveProduct() {
     const quantidade = parseInt(document.getElementById('field_quantidade').value) || 0;
     const imagem = document.getElementById('field_imagem').value.trim();
 
-    if (!nome || !codigo) { 
-        alert('⚠️ "Nome" e "Código" são obrigatórios!'); 
-        return; 
+    if (!nome || !codigo) {
+        alert('⚠️ "Nome" e "Código" são obrigatórios!');
+        return;
     }
 
     // Objeto base com os dados do formulário
@@ -638,11 +678,11 @@ async function saveProduct() {
 
     try {
         // === CENÁRIO 1: EDIÇÃO ===
-        if (editingIndex !== null) { 
+        if (editingIndex !== null) {
             // O 'editingIndex' é o número da linha (0, 1, 2...).
             // Precisamos pegar o objeto real da lista para descobrir o ID do Banco (_id).
             const original = products[editingIndex];
-            
+
             if (!original || !original._id) {
                 console.error("❌ Erro: Produto original não encontrado ou sem ID.", editingIndex);
                 alert("Erro interno: Produto não identificado.");
@@ -650,23 +690,23 @@ async function saveProduct() {
             }
 
             // Preenche o ID correto do MongoDB para a API saber quem atualizar
-            prod._id = original._id; 
+            prod._id = original._id;
             prod.id = original._id;
 
             // Chama a API de atualização (PUT)
-            const success = await syncProductToAPI(prod, false); 
-            
-            if(success) {
+            const success = await syncProductToAPI(prod, false);
+
+            if (success) {
                 addLogStructured('editar', `Editou produto "${prod.nome}"`, original.quantidade, prod.quantidade);
                 closeAddModal();
             }
-            return; 
+            return;
         }
 
         // === CENÁRIO 2: VERIFICAÇÃO DE DUPLICIDADE (Novo Produto) ===
-        const duplicado = products.find(p => 
-            p.nome.toLowerCase() === nome.toLowerCase() && 
-            p.codigo === codigo && 
+        const duplicado = products.find(p =>
+            p.nome.toLowerCase() === nome.toLowerCase() &&
+            p.codigo === codigo &&
             p.localizacao.toLowerCase() === localizacao.toLowerCase()
         );
 
@@ -699,7 +739,7 @@ async function saveProduct() {
 
         // === CENÁRIO 3: SALVAR NOVO ===
         const success = await syncProductToAPI(prod, true); // true = POST
-        if(success) {
+        if (success) {
             addLogStructured('novo', `Criou produto "${prod.nome}"`, null, prod.quantidade);
             closeAddModal();
         }
@@ -789,14 +829,14 @@ async function confirmSell() {
     const success = await syncProductToAPI(p, false);
 
     if (success) {
-        const sale = { 
-            produto: p.nome, 
-            quantidade: qty, 
-            comprador: buyer, 
-            doc, 
-            ts: new Date().toISOString(), 
+        const sale = {
+            produto: p.nome,
+            quantidade: qty,
+            comprador: buyer,
+            doc,
+            ts: new Date().toISOString(),
             productId: p._id,
-            userId: currentUser 
+            userId: currentUser
         };
 
         // NOVO: POST para a rota de Vendas
@@ -811,12 +851,12 @@ async function confirmSell() {
                 console.warn("API de Vendas falhou. Salvando log localmente.", e);
             }
         }
-        
+
         // Salva Logs e Vendas localmente (cache)
         sales.unshift(sale);
         addLogStructured('venda', `Vendeu ${qty} de "${p.nome}" para ${buyer}`, before, p.quantidade, { saleId: sale.id });
 
-        persistAll(); 
+        persistAll();
         updateAlertsAndSales();
         closeSellModal();
     }
@@ -1200,10 +1240,10 @@ async function openAdminPanelModal() {
 }
 
 async function fetchUsers() {
-    showLoading(); 
+    showLoading();
     try {
         const response = await fetch('/api/users', { headers: getAuthHeaders() });
-        
+
         if (response.status === 403) {
             alert('Acesso negado. Apenas Admins podem listar usuários.');
             document.getElementById('modalAdminPanel').style.display = 'none';
@@ -1218,7 +1258,7 @@ async function fetchUsers() {
         alert('Erro ao carregar lista de usuários. Verifique o servidor.');
         renderUserTable(null); // Renderiza a tabela vazia
     } finally {
-         
+
     }
     hideLoading();
 }
@@ -1235,8 +1275,8 @@ function renderUserTable(users) {
     users.forEach(user => {
         const row = document.createElement('tr');
         // Checa se o usuário atual logado não pode deletar/editar a própria conta
-        const isSelf = user.email === currentUser; 
-        
+        const isSelf = user.email === currentUser;
+
         row.innerHTML = `
             <td>${user.nome}</td>
             <td>${user.email}</td>
@@ -1267,9 +1307,9 @@ async function deleteUser(id, nome) {
             });
 
             if (response.status === 403) {
-                 alert("❌ Falha: Não é permitido deletar o usuário logado.");
+                alert("❌ Falha: Não é permitido deletar o usuário logado.");
             } else if (!response.ok) {
-                 throw new Error('Falha ao deletar no servidor.');
+                throw new Error('Falha ao deletar no servidor.');
             }
 
             addLogStructured('user_delete', `Admin ${currentUser} removeu a conta de ${nome}`);
@@ -1287,7 +1327,7 @@ async function deleteUser(id, nome) {
 function openUserEditModal(id, currentRole, email) {
     // Para simplificar o fluxo, usaremos um PROMPT para a nova senha
     // e um prompt para a nova função.
-    
+
     // 1. EDITAR CARGO
     const newRole = prompt(`Editar cargo para ${email}:\nDigite 'admin' ou 'funcionario':`, currentRole);
     if (!newRole || (newRole !== 'admin' && newRole !== 'funcionario')) {
