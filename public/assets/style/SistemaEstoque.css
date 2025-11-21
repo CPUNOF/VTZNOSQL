@@ -512,3 +512,121 @@ footer { padding: 20px; text-align: center; color: var(--text-muted); font-size:
 .log-changes i { color: #94a3b8; }
 .val-old { color: #ef4444; text-decoration: line-through; opacity: 0.7; }
 .val-new { color: #16a34a; font-weight: 700; }
+
+/* ============================================================
+   PAINEL ADMIN PREMIUM (Gestão de Usuários)
+   ============================================================ */
+
+/* 1. Ajuste do Modal para ser mais largo e limpo */
+#modalAdminPanel .card {
+    width: 900px; /* Mais largo para caber e-mails longos */
+    max-width: 95%;
+    background: #f8fafc; /* Fundo levemente cinza para destacar as linhas brancas */
+    padding: 40px;
+}
+
+#modalAdminPanel h3 {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 22px; color: var(--primary-dark);
+    margin-bottom: 8px;
+}
+/* Ícone escudo no título */
+#modalAdminPanel h3::before {
+    content: '🛡️'; font-size: 24px;
+}
+
+#modalAdminPanel p {
+    color: var(--text-muted); margin-bottom: 24px; font-size: 14px;
+}
+
+/* 2. Tabela Estilizada (Visual de Linhas Flutuantes) */
+#userTable {
+    width: 100%;
+    border-collapse: separate; /* Permite espaçamento entre linhas */
+    border-spacing: 0 10px; /* Espaço vertical entre usuários */
+    margin-top: 10px;
+}
+
+/* Cabeçalho da Tabela */
+#userTable thead th {
+    text-align: left;
+    padding: 0 20px 8px 20px;
+    font-size: 11px; font-weight: 800; text-transform: uppercase;
+    color: var(--text-muted); letter-spacing: 1px;
+    border: none; background: transparent;
+}
+
+/* Linhas de Usuário (Cards) */
+#userTable tbody tr {
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+#userTable tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    z-index: 2; position: relative;
+}
+
+/* Células */
+#userTable td {
+    padding: 16px 20px;
+    border: 1px solid rgba(0,0,0,0.02);
+    border-style: solid none; /* Bordas só em cima/baixo */
+    vertical-align: middle;
+    font-size: 14px; color: var(--text-dark);
+}
+
+/* Bordas arredondadas nas pontas da linha */
+#userTable td:first-child { 
+    border-top-left-radius: 12px; border-bottom-left-radius: 12px; 
+    border-left: 1px solid rgba(0,0,0,0.02);
+    font-weight: 700;
+}
+#userTable td:last-child { 
+    border-top-right-radius: 12px; border-bottom-right-radius: 12px; 
+    border-right: 1px solid rgba(0,0,0,0.02);
+    text-align: right;
+}
+
+/* 3. Tratamento de E-mail Longo (O Fim da Barra de Rolagem) */
+#userTable td:nth-child(2) {
+    max-width: 250px; /* Limite de largura */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adiciona "..." se for muito longo */
+    color: var(--text-muted);
+    font-family: 'Courier New', monospace; /* Fonte mono para email fica tech */
+    font-size: 13px;
+}
+
+/* 4. Badges de Cargo (Estilizando o <strong> gerado pelo JS) */
+#userTable td strong {
+    display: inline-block;
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 11px; font-weight: 800; text-transform: uppercase;
+}
+
+/* Se o texto for ADMIN */
+#userTable td strong:contains("ADMIN") { /* CSS não tem contains nativo, mas vamos usar atributo se der, ou fallback */
+    /* Fallback genérico bonito */
+    background: #f1f5f9; color: var(--text-dark); border: 1px solid #e2e8f0;
+}
+
+/* 5. Botões de Ação na Tabela */
+#userTable .btn-ghost {
+    padding: 6px 12px; height: 32px; font-size: 12px;
+    background: white; border: 1px solid #e2e8f0; color: var(--text-muted);
+}
+#userTable .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+
+#userTable .btn-warn {
+    padding: 6px 12px; height: 32px; font-size: 12px;
+    background: #fee2e2; color: #991b1b; border: none;
+}
+#userTable .btn-warn:hover { background: #ef4444; color: white; }
+
+/* Botão desabilitado (ex: deletar a si mesmo) */
+#userTable button:disabled {
+    opacity: 0.3; cursor: not-allowed; filter: grayscale(100%);
+}
