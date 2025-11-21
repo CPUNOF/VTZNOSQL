@@ -1,0 +1,90 @@
+/* Hero */
+.page-infra { padding-top: 0px; }
+
+.hero {
+	position: relative;
+	background: linear-gradient(#198754), url('') center/cover no-repeat;
+	color: #198754;
+	min-height: 34vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 0rem 0;
+	overflow: hidden;
+}
+
+@media (min-width: 992px) {
+  #navbarNav > ul:first-child {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.hero .container {
+	position: relative;
+	z-index: 2;
+}
+/*hero texto de cima*/
+.hero h1 {
+	font-weight: 700;
+	letter-spacing: -0.5px;
+	margin-bottom: 0.5rem;
+	text-shadow: 0 2px 6px rgba(0,0,0,0.45);
+}
+/*hero texto de baixo*/
+.hero p.lead {
+	color: #ffffffeb;
+	font-size: 1.05rem;
+	margin-bottom: 1rem;
+}
+
+.hero .cta-btn {
+	margin-top: 0.5rem;
+}
+
+
+.hero::after {
+	content: '';
+	position: absolute;
+	left: -10%;
+	bottom: -10%;
+	width: 120%;
+	height: 40%;
+	background: (90deg, rgba(255, 255, 255, 0.02));
+	transform: rotate(-2deg);
+	pointer-events: none;
+}
+
+/* Centralização do Menu Principal da Navbar */
+@media (min-width: 992px) {
+  #navbarNav > ul:first-child {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* carrossel */
+.carousel .carousel-item img { max-height: 420px; object-fit: cover; }
+.carousel-caption { background: #00000073; backdrop-filter: blur(3px); }
+
+
+.diferenciais .col-md-3 h5 { font-weight: 700; color: #155724; }
+.diferenciais .col-md-3 p { color: #333; }
+.diferenciais .card-like {
+	background: #fff; border-radius: 8px; padding: 1.25rem; box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+
+footer {
+  background-color: #198754; /* verde bootstrap */
+  color: white;
+  padding: 40px 0;
+}
+
+footer a {
+  color: white;
+  text-decoration: none;
+}

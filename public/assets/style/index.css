@@ -1,0 +1,57 @@
+/* Hero */
+.hero {
+  background: url('../images/bfb11048-cafa-482c-9dde-5a7bf82f0387.jpeg') center/cover no-repeat;
+  color: white;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Centralização do Menu Principal da Navbar */
+@media (min-width: 992px) {
+  #navbarNav > ul:first-child {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.col-md-6 img{
+  width: 70%;
+  height: 50vh;
+  object-fit: cover;
+    display: block;      
+  margin-left: auto;    
+  margin-right: 0; 
+}
+
+.col-md-6 p {
+  text-align: justify;
+}
+
+.col-md-6.order-md-1 img {
+  width: 70%;
+  height: 50vh;
+  object-fit: cover;
+    display: block;
+  margin-right: auto;
+  margin-left: 0;
+}
+
+.col-md-6.order-md-1 p {
+  text-align: justify;
+}
+
+/* Footer */
+footer {
+  background-color: #198754; /* verde bootstrap */
+  color: white;
+  padding: 40px 0;
+}
+
+footer a {
+  color: white;
+  text-decoration: none;
+}

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acesso VTZ</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="stylesheet" href="assets/style/StyleLogin.css" />
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="form-container">
+            <form id="loginForm" onsubmit="return false;">
+                <div style="margin-bottom: 20px;">
+                    <i class='bx bxs-package' style="font-size: 40px; color: #3fbb3b;"></i>
+                </div>
+                <h1>Bem-vindo de volta</h1>
+                <p class="subtitle">Insira suas credenciais para acessar o estoque</p>
+
+                <div class="input-group">
+                    <i class='bx bx-user icon-left'></i>
+                    <input type="text" id="loginUser" placeholder="E-mail ou Usuário" required>
+                </div>
+
+                <div class="input-group">
+                    <i class='bx bx-lock-alt icon-left'></i>
+                    <input type="password" id="loginPass" placeholder="Senha" required>
+                    <i class='bx bx-show toggle-password' onclick="toggleLoginPassword()"></i>
+                </div>
+
+                <a href="#" class="forgot-link" onclick="openForgotPasswordModal(event)">Esqueceu a senha?</a>
+
+                <div class="captcha-container">
+                    <div class="captcha-box">
+                        <canvas id="captchaCanvas" width="120" height="40"></canvas>
+                        <button type="button" onclick="generateCaptcha()" title="Recarregar Captcha">
+                            <i class='bx bx-refresh'></i>
+                        </button>
+                    </div>
+                    <input type="text" id="captchaInput" placeholder="Digite o código acima" required
+                        autocomplete="off">
+                </div>
+
+                <button id="btnLogin" class="btn-login" type="button">ACESSAR SISTEMA</button>
+            </form>
+        </div>
+
+        <div class="toggle-container">
+            <div class="toggle-content">
+                <h1>VTZ Agronegócios</h1>
+                <p>Gestão inteligente e controle total do seu estoque de sementes.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="forgotPasswordModal" class="modal" style="display:none;">
+        <div class="card">
+            <div style="font-size: 30px; color: #3fbb3b; margin-bottom: 10px;"><i class='bx bx-envelope'></i></div>
+            <h2>Recuperar Senha</h2>
+            <p style="color:#666; font-size:14px; margin-bottom:20px;">Digite seu e-mail cadastrado para receber o link
+                de redefinição.</p>
+
+            <form id="forgotPasswordForm" onsubmit="return false;">
+                <input type="email" id="resetEmail" placeholder="exemplo@vtz.com" required>
+                <div id="resetMessage" style="font-size:13px; margin-bottom:10px; min-height:18px;"></div>
+
+                <button type="button" onclick="submitForgotPassword()" id="btnReset" class="btn-primary">ENVIAR
+                    LINK</button>
+                <button type="button" onclick="closeForgotPasswordModal()" class="btn-ghost">CANCELAR</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/Scripts/Login.js"></script>
+    <script>
+        // Script inline para o efeito visual do olhinho (exclusivo do Login)
+        function toggleLoginPassword() {
+            const input = document.getElementById('loginPass');
+            const icon = document.querySelector('.toggle-password');
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('bx-show');
+                icon.classList.add('bx-hide');
+            } else {
+                input.type = "password";
+                icon.classList.remove('bx-hide');
+                icon.classList.add('bx-show');
+            }
+        }
+    </script>
+</body>
+
+</html>
