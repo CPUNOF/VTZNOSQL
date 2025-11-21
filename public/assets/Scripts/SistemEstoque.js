@@ -615,7 +615,10 @@ function closeAddModal() {
 }
 
 // FUNÇÃO SALVAR COM DETECÇÃO DE DUPLICIDADE
+// FUNÇÃO SALVAR CORRIGIDA
 async function saveProduct() {
+    console.log("🟢 Botão Salvar clicado. Processando...");
+    
     const nome = document.getElementById('field_nome').value.trim();
     const peso = document.getElementById('field_peso').value.trim();
     const localizacao = document.getElementById('field_local').value.trim();
@@ -626,74 +629,84 @@ async function saveProduct() {
     const imagem = document.getElementById('field_imagem').value.trim();
 
     if (!nome || !codigo) { 
-        alert('Nome e Código são obrigatórios'); 
+        alert('⚠️ "Nome" e "Código" são obrigatórios!'); 
         return; 
     }
 
-    // Objeto base do formulário
+    // Objeto base com os dados do formulário
     const prod = { nome, peso, localizacao, codigo, entrada, validade, quantidade, imagem };
 
-    // === CENÁRIO 1: EDIÇÃO (Se já estamos editando um ID, apenas salva) ===
-    if (editingIndex !== null) { // editingIndex guarda o ID do Mongo
-        const original = products.find(p => p._id === editingIndex);
-        if (!original) return; // Segurança
-
-        prod._id = editingIndex; 
-        prod.id = editingIndex; 
-
-        const success = await syncProductToAPI(prod, false); // false = PUT
-        if(success) {
-            addLogStructured('editar', `Editou produto "${prod.nome}"`, original.quantidade, prod.quantidade);
-            closeAddModal();
-        }
-        return;
-    }
-
-    // === CENÁRIO 2: NOVO PRODUTO (Verifica Duplicidade) ===
-    
-    // Procura se já existe Nome + Código + Localização iguais (ignora maiúsculas/minúsculas)
-    const duplicado = products.find(p => 
-        p.nome.toLowerCase() === nome.toLowerCase() && 
-        p.codigo === codigo && 
-        p.localizacao.toLowerCase() === localizacao.toLowerCase()
-    );
-
-    if (duplicado) {
-        // Pergunta ao usuário
-        const desejaSomar = confirm(
-            `⚠️ PRODUTO JÁ EXISTENTE!\n\n` +
-            `Nome: ${duplicado.nome}\n` +
-            `Local: ${duplicado.localizacao}\n` +
-            `Qtd Atual: ${duplicado.quantidade}\n\n` +
-            `Deseja SOMAR ${quantidade} unidades ao estoque existente?\n` +
-            `[OK] = Somar e atualizar validade\n` +
-            `[Cancelar] = Criar como um novo lote separado`
-        );
-
-        if (desejaSomar) {
-            // Lógica de Soma (Merge)
-            const qtdAntes = duplicado.quantidade;
-            duplicado.quantidade += quantidade;
+    try {
+        // === CENÁRIO 1: EDIÇÃO ===
+        if (editingIndex !== null) { 
+            // O 'editingIndex' é o número da linha (0, 1, 2...).
+            // Precisamos pegar o objeto real da lista para descobrir o ID do Banco (_id).
+            const original = products[editingIndex];
             
-            // Opcional: Atualiza validade/entrada com a do novo lote se o usuário informou
-            if (validade) duplicado.validade = validade;
-            if (entrada) duplicado.entrada = entrada;
+            if (!original || !original._id) {
+                console.error("❌ Erro: Produto original não encontrado ou sem ID.", editingIndex);
+                alert("Erro interno: Produto não identificado.");
+                return;
+            }
 
-            const success = await syncProductToAPI(duplicado, false); // Atualiza o existente
-            if (success) {
-                addLogStructured('merge', `Somou ${quantidade} un. em "${duplicado.nome}"`, qtdAntes, duplicado.quantidade);
+            // Preenche o ID correto do MongoDB para a API saber quem atualizar
+            prod._id = original._id; 
+            prod.id = original._id;
+
+            // Chama a API de atualização (PUT)
+            const success = await syncProductToAPI(prod, false); 
+            
+            if(success) {
+                addLogStructured('editar', `Editou produto "${prod.nome}"`, original.quantidade, prod.quantidade);
                 closeAddModal();
             }
-            return; // Sai da função, não cria novo
+            return; 
         }
-        // Se clicar em Cancelar, o código segue abaixo e cria um novo (Lote separado)
-    }
 
-    // === CENÁRIO 3: CRIAR NOVO (Se não existir ou se usuário escolheu novo lote) ===
-    const success = await syncProductToAPI(prod, true); // true = POST
-    if(success) {
-        addLogStructured('novo', `Criou produto "${prod.nome}"`, null, prod.quantidade);
-        closeAddModal();
+        // === CENÁRIO 2: VERIFICAÇÃO DE DUPLICIDADE (Novo Produto) ===
+        const duplicado = products.find(p => 
+            p.nome.toLowerCase() === nome.toLowerCase() && 
+            p.codigo === codigo && 
+            p.localizacao.toLowerCase() === localizacao.toLowerCase()
+        );
+
+        if (duplicado) {
+            const desejaSomar = confirm(
+                `⚠️ PRODUTO JÁ EXISTENTE!\n\n` +
+                `Nome: ${duplicado.nome}\n` +
+                `Local: ${duplicado.localizacao}\n` +
+                `Qtd Atual: ${duplicado.quantidade}\n\n` +
+                `Deseja SOMAR ${quantidade} unidades ao estoque existente?\n` +
+                `[OK] = Somar\n` +
+                `[Cancelar] = Criar novo lote separado`
+            );
+
+            if (desejaSomar) {
+                const qtdAntes = duplicado.quantidade;
+                duplicado.quantidade += quantidade;
+                // Atualiza datas se informado
+                if (validade) duplicado.validade = validade;
+                if (entrada) duplicado.entrada = entrada;
+
+                const success = await syncProductToAPI(duplicado, false);
+                if (success) {
+                    addLogStructured('merge', `Somou ${quantidade} un. em "${duplicado.nome}"`, qtdAntes, duplicado.quantidade);
+                    closeAddModal();
+                }
+                return;
+            }
+        }
+
+        // === CENÁRIO 3: SALVAR NOVO ===
+        const success = await syncProductToAPI(prod, true); // true = POST
+        if(success) {
+            addLogStructured('novo', `Criou produto "${prod.nome}"`, null, prod.quantidade);
+            closeAddModal();
+        }
+
+    } catch (erro) {
+        console.error("Erro no Save:", erro);
+        alert("Erro ao processar. Verifique o console.");
     }
 }
 
