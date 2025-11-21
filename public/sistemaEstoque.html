@@ -126,28 +126,36 @@
 
       <!-- 🧩 Modal de revisão de importação -->
       <div id="importModal" class="modal" style="display:none;">
-        <div class="card" style="max-width:900px;width:95%;max-height:90vh;overflow:auto;">
-          <h2 style="margin-top:0;">📦 Revisar Importação de Excel</h2>
-          <p>Revise os produtos abaixo antes de confirmar a importação:</p>
-          <table id="importTable" style="width:100%;border-collapse:collapse;font-size:13px;">
-            <thead style="background:#e8f5e9;">
-              <tr>
-                <th>Nome</th>
-                <th>Peso</th>
-                <th>Local</th>
-                <th>Código</th>
-                <th>Validade</th>
-                <th>Qtd. Excel</th>
-                <th>Status</th>
-                <th>Ação</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-          <div style="margin-top:15px;text-align:right;">
+        <div class="card card-import">
+
+          <div class="import-header">
+            <h2>📦 Revisar Importação</h2>
+            <p>Verifique os dados abaixo. Linhas amarelas indicam produtos já existentes.</p>
+          </div>
+
+          <div class="table-container">
+            <table id="importTable">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Peso</th>
+                  <th>Local</th>
+                  <th>Código</th>
+                  <th>Validade</th>
+                  <th>Qtd.</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Ação</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="import-footer">
             <button class="btn btn-ghost" onclick="closeImportModal()">Cancelar</button>
             <button class="btn btn-primary" onclick="confirmImportChanges()">Confirmar Importação</button>
           </div>
+
         </div>
       </div>
 

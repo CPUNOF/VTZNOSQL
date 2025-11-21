@@ -630,3 +630,145 @@ footer { padding: 20px; text-align: center; color: var(--text-muted); font-size:
 #userTable button:disabled {
     opacity: 0.3; cursor: not-allowed; filter: grayscale(100%);
 }
+
+/* ============================================================
+   MODAL DE IMPORTAÇÃO (VISUAL PREMIUM)
+   ============================================================ */
+
+/* Ajuste do Card para caber a tabela larga */
+.card-import {
+    width: 900px !important; /* Mais largo para caber as colunas */
+    max-width: 95% !important;
+    padding: 0 !important; /* Remove padding geral para o header ficar full width */
+    overflow: hidden; /* Garante bordas arredondadas */
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh !important;
+}
+
+/* Cabeçalho do Modal (Fixo no topo) */
+.import-header {
+    padding: 20px 30px;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    z-index: 10;
+}
+
+.import-header h2 {
+    margin: 0 0 4px 0;
+    font-size: 20px;
+    color: var(--text-dark);
+    display: flex; align-items: center; gap: 10px;
+}
+
+.import-header p {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 13px;
+}
+
+/* Container da Tabela com Scroll Independente */
+.table-container {
+    flex: 1; /* Ocupa o espaço restante */
+    overflow-y: auto;
+    background: #f8fafc;
+}
+
+/* A Tabela em si */
+#importTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+#importTable thead th {
+    background: #f1f5f9;
+    color: var(--text-light);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    padding: 12px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky; top: 0; /* Cabeçalho fixo na rolagem */
+    z-index: 5;
+}
+
+#importTable tbody td {
+    padding: 10px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--text-dark);
+    vertical-align: middle;
+    background: white;
+}
+
+/* Linhas Duplicadas (Destaque sutil amarelo) */
+#importTable tbody tr[style*="fff8e1"] td {
+    background-color: #fffbeb !important; /* Força amarelo claro nas células */
+}
+
+/* Coluna de Status (Badge) */
+#importTable td:nth-last-child(2) { 
+    font-weight: 600; font-size: 11px; text-transform: uppercase;
+}
+
+/* Botões de Ação Compactos (Lado a Lado) */
+#importTable td:last-child {
+    white-space: nowrap;
+    text-align: right;
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+#importTable .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 6px 12px;
+    height: 28px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    margin: 0; /* Remove margens antigas */
+}
+
+/* Botão Somar/Novo (Azul Suave) */
+#importTable .btn:first-child {
+    background: #eff6ff; color: #2563eb; border-color: #dbeafe;
+}
+#importTable .btn:first-child:hover { background: #2563eb; color: white; }
+
+/* Botão Substituir (Laranja Suave) */
+#importTable .btn:nth-child(2) {
+    background: #fff7ed; color: #ea580c; border-color: #ffedd5;
+}
+#importTable .btn:nth-child(2):hover { background: #ea580c; color: white; }
+
+/* Botão Ignorar (Cinza) */
+#importTable .btn:last-child {
+    background: white; color: #64748b; border-color: #e2e8f0;
+}
+#importTable .btn:last-child:hover { background: #f1f5f9; color: #0f172a; }
+
+/* Estado Selecionado (Visual de "Check") */
+#importTable .btn[disabled] {
+    opacity: 1; 
+    background: var(--success); /* Verde */
+    color: white;
+    border-color: var(--success);
+    cursor: default;
+    box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2);
+    transform: scale(1.05);
+}
+
+/* Rodapé do Modal (Botões Cancelar/Confirmar) */
+.import-footer {
+    padding: 16px 30px;
+    border-top: 1px solid #e2e8f0;
+    background: white;
+    text-align: right;
+    display: flex; justify-content: flex-end; gap: 12px;
+}
+.import-footer .btn { height: 40px; font-size: 13px; }
