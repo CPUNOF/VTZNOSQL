@@ -208,16 +208,143 @@ main.content {
     background: radial-gradient(circle at 0% 0%, rgba(22, 163, 74, 0.05), transparent 40%);
 }
 
-/* KPIs */
-.kpi-row { display: flex; gap: 20px; margin-bottom: 24px; }
-.kpi {
-    flex: 1; background: white; padding: 20px; border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm); border: 1px solid #f1f5f9;
-    display: flex; flex-direction: column; gap: 5px;
-    animation: slideInUp 0.5s ease-out;
+/* ============================================================
+   KPI DASHBOARD (DESIGN ULTRA PREMIUM)
+   ============================================================ */
+
+.kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
 }
-.kpi .label { font-size: 13px; color: var(--text-muted); font-weight: 600; }
-.kpi .value { font-size: 28px; font-weight: 800; color: var(--primary-dark); letter-spacing: -1px; }
+
+.kpi {
+    position: relative;
+    background: white;
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    border: 1px solid rgba(255,255,255,0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden; /* Para cortar o ícone de fundo */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
+}
+
+.kpi:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Tipografia */
+.kpi .label {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    z-index: 2;
+}
+
+.kpi .value {
+    font-size: 36px;
+    font-weight: 900; /* Extra bold */
+    margin-top: 4px;
+    letter-spacing: -1px;
+    z-index: 2;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Ícone Decorativo de Fundo (Glass) */
+.kpi::after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    font-family: 'boxicons'; /* Usa a fonte de ícones */
+    font-size: 100px;
+    opacity: 0.08;
+    transform: rotate(-15deg);
+    transition: transform 0.3s;
+    z-index: 1;
+}
+
+.kpi:hover::after {
+    transform: rotate(0deg) scale(1.1);
+    opacity: 0.12;
+}
+
+/* Barra de Progresso Decorativa (Animada) */
+.kpi::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 4px;
+    width: 0%; /* Começa em 0 */
+    animation: loadBar 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: 0.2s;
+}
+
+@keyframes loadBar { to { width: 100%; } }
+
+
+/* --- ESTILOS ESPECÍFICOS POR CARD (USANDO NTH-CHILD) --- */
+
+/* CARD 1: PRODUTOS (Verde - Sucesso) */
+.kpi:nth-child(1) {
+    background: linear-gradient(145deg, #ffffff, #f0fdf4);
+    border-bottom: 1px solid #bbf7d0;
+}
+.kpi:nth-child(1) .value {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.kpi:nth-child(1)::before { background: #16a34a; } /* Barra */
+.kpi:nth-child(1)::after { content: '\ea4e'; color: #16a34a; } /* Ícone Box (bxs-package) */
+
+
+/* CARD 2: BAIXO ESTOQUE (Vermelho - Perigo) */
+.kpi:nth-child(2) {
+    background: linear-gradient(145deg, #ffffff, #fef2f2);
+    border-bottom: 1px solid #fecaca;
+}
+.kpi:nth-child(2) .value {
+    color: #dc2626;
+    text-shadow: 0 4px 10px rgba(220, 38, 38, 0.15); /* Glow suave */
+    animation: pulseText 2s infinite; /* Alerta pulsante */
+}
+.kpi:nth-child(2)::before { background: #dc2626; }
+.kpi:nth-child(2)::after { content: '\ec55'; color: #dc2626; } /* Ícone Trend Down (bx-trending-down) */
+
+
+/* CARD 3: VENCENDO (Laranja/Âmbar - Atenção) */
+.kpi:nth-child(3) {
+    background: linear-gradient(145deg, #ffffff, #fffbeb);
+    border-bottom: 1px solid #fde68a;
+}
+.kpi:nth-child(3) .value {
+    color: #d97706;
+}
+.kpi:nth-child(3)::before { background: #d97706; }
+.kpi:nth-child(3)::after { content: '\ec1d'; color: #d97706; } /* Ícone Warning (bx-error) */
+
+
+/* Animação de Pulso para números críticos */
+@keyframes pulseText {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .kpi .value { font-size: 28px; }
+    .kpi::after { font-size: 80px; }
+}
 
 /* Controles (Busca e Botões) */
 .controls {
@@ -772,3 +899,153 @@ footer { padding: 20px; text-align: center; color: var(--text-muted); font-size:
     display: flex; justify-content: flex-end; gap: 12px;
 }
 .import-footer .btn { height: 40px; font-size: 13px; }
+
+/* ============================================================
+   RESPONSIVIDADE MOBILE (SMARTPHONE)
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* --- 1. HEADER OTIMIZADO --- */
+    header.topbar {
+        height: auto;
+        padding: 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .brand { width: 100%; justify-content: center; margin-bottom: 4px; }
+    .brand span { display: none; } /* Esconde texto longo */
+
+    /* Ajuste dos botões do topo para não quebrar */
+    .top-actions {
+        width: 100%;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .user-chip { padding: 4px 10px; width: auto; }
+    .user-chip input { width: 90px !important; }
+
+    /* Botões Admin menores no celular */
+    #btnRegister, #btnAdminPanel {
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+    }
+    #btnRegister i, #btnAdminPanel i { font-size: 14px !important; }
+
+    #statusBadge { display: none; } /* Esconde status da rede pra poupar espaço */
+
+    /* --- 2. LAYOUT GERAL --- */
+    aside.sidebar { display: none; } /* Esconde barra lateral */
+    main.content { padding: 16px; }
+
+    /* --- 3. KPIs --- */
+    .kpi-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    /* --- 4. CONTROLES --- */
+    .controls {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+    }
+    .search, .actions, .menu-acoes { width: 100%; }
+    .btn { width: 100%; justify-content: center; }
+
+    /* --- 5. CARD DE PRODUTO (LAYOUT DE CARTÃO) --- */
+    .list-header { display: none; }
+
+    .row-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centraliza tudo */
+        text-align: center;
+        gap: 12px;
+        padding: 20px;
+        position: relative;
+    }
+
+    /* Pílula de índice */
+    .index-pill {
+        position: absolute; top: 12px; right: 12px;
+        background: rgba(0,0,0,0.05); font-size: 11px;
+        width: 24px; height: 24px;
+    }
+
+    /* Imagem Grande e Bonita */
+    .thumb { width: 100%; height: 140px; margin: 0; }
+    .thumb img { 
+        width: 100%; height: 100%; 
+        object-fit: cover; border-radius: 12px; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* --- AQUI ESTÁ A CORREÇÃO DO NOME --- */
+    .col { width: 100%; display: block !important; }
+    
+    /* Nome do Produto (Coluna 3) */
+    .row-card .col:nth-child(3) input {
+        text-align: center;
+        font-size: 20px !important;
+        font-weight: 900 !important;
+        color: var(--text-dark) !important; /* Força cor escura */
+        margin-top: 8px;
+        white-space: normal; /* Permite quebrar linha se nome for grande */
+    }
+
+    /* Esconde colunas secundárias */
+    /* 2=Peso, 4=Código, 5=Local, 6=Entrada, 7=Validade */
+    .row-card .col:nth-child(2), /* Peso */
+    .row-card .col:nth-child(4), /* Código */
+    .row-card .col:nth-child(6), /* Entrada */
+    .row-card .col:nth-child(7)  /* Validade */
+    { 
+        display: none !important; 
+    }
+
+    /* Mostra Localização (Coluna 5) destacado */
+    .row-card .col:nth-child(5) input {
+        text-align: center;
+        font-size: 13px;
+        color: var(--text-light);
+        background: #f1f5f9;
+        border-radius: 4px;
+        padding: 4px;
+        width: auto !important;
+        display: inline-block;
+    }
+
+    /* Barra de Ações (Botões Grandes para Dedo) */
+    .row-card .col:last-child {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 16px;
+        margin-top: 4px;
+    }
+
+    /* Ajuste dos botões para toque */
+    .qty button { width: 36px; height: 36px; font-size: 18px; }
+    .qty div { font-size: 16px; padding: 0 10px; }
+    .gear { width: 40px; height: 40px; font-size: 20px; }
+
+    /* --- 6. MODAIS RESPONSIVOS --- */
+    .modal .card {
+        width: 95% !important;
+        max-height: 90vh;
+        padding: 20px;
+    }
+    .modal-actions { flex-direction: column-reverse; }
+    .modal .btn-primary, .modal .btn-ghost { width: 100%; margin: 0; }
+    
+    /* Tabela Import scrollável */
+    #importTable { display: block; overflow-x: auto; white-space: nowrap; }
+}

@@ -180,7 +180,10 @@
         <div id="logList" style="margin-top:8px; max-height:300px; overflow:auto;"></div>
       </div>
 
-      <footer>VTZ Agronegócios • Protótipo • Dados armazenados em localStorage</footer>
+      <footer>
+    &copy; <span id="year"></span> VTZ Agronegócios • Sistema de Gestão Integrado • v1.0
+    <script>document.getElementById('year').innerText = new Date().getFullYear();</script>
+</footer>
     </main>
   </div>
 
