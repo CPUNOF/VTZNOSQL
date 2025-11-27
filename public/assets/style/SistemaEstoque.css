@@ -988,49 +988,65 @@ footer { padding: 20px; text-align: center; color: var(--text-muted); font-size:
 
 @media (max-width: 768px) {
 
-    /* --- 1. HEADER OTIMIZADO --- */
+    /* --- 1. HEADER (CORREÇÃO DO PRINT) --- */
     header.topbar {
-        height: auto;
+        height: auto;       /* Altura automática para caber tudo */
         padding: 12px;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
+        flex-direction: column; /* Empilha logo e ações */
+        gap: 12px;
     }
 
-    .brand { width: 100%; justify-content: center; margin-bottom: 4px; }
-    .brand span { display: none; } /* Esconde texto longo */
+    /* Logo Centralizada */
+    .brand { 
+        width: 100%; 
+        justify-content: center; 
+        margin-bottom: 4px; 
+    }
+    /* Opcional: Mostra só o ícone se o texto for muito grande */
+    /* .brand span { display: none; } */ 
 
-    /* Ajuste dos botões do topo para não quebrar */
+    /* Container das Ações */
     .top-actions {
         width: 100%;
+        display: flex;
+        flex-wrap: wrap; /* Permite quebrar linha */
         justify-content: center;
         gap: 8px;
     }
 
-    .user-chip { padding: 4px 10px; width: auto; }
-    .user-chip input { width: 90px !important; }
-
-    /* Botões Admin menores no celular */
-    #btnRegister, #btnAdminPanel {
-        padding: 6px 10px !important;
-        font-size: 11px !important;
+    /* USUÁRIO: Ocupa a linha inteira no topo */
+    .user-chip { 
+        width: 100%; 
+        justify-content: center; 
+        background: rgba(255,255,255,0.2); /* Destaque leve */
+        margin-bottom: 4px;
     }
-    #btnRegister i, #btnAdminPanel i { font-size: 14px !important; }
+    .user-chip input { width: auto !important; text-align: center; }
 
-    #statusBadge { display: none; } /* Esconde status da rede pra poupar espaço */
+    /* BOTÕES ADMIN: Dividem a linha de baixo (50% cada) */
+    #btnRegister, #btnAdminPanel {
+        flex: 1; /* Crescem para ocupar espaço igual */
+        justify-content: center;
+        padding: 8px !important;
+        font-size: 12px !important;
+        white-space: nowrap; /* Impede quebra de texto dentro do botão */
+    }
+
+    #statusBadge { display: none; } /* Esconde badge de rede para limpar a tela */
 
     /* --- 2. LAYOUT GERAL --- */
     aside.sidebar { display: none; } /* Esconde barra lateral */
     main.content { padding: 16px; }
 
-    /* --- 3. KPIs --- */
+    /* --- 3. KPIs (Um por linha) --- */
     .kpi-row {
         grid-template-columns: 1fr;
         gap: 12px;
         margin-bottom: 20px;
     }
-    
-    /* --- 4. CONTROLES --- */
+    .kpi { padding: 20px; }
+
+    /* --- 4. CONTROLES (Busca e Botões) --- */
     .controls {
         flex-direction: column;
         gap: 10px;
@@ -1039,95 +1055,71 @@ footer { padding: 20px; text-align: center; color: var(--text-muted); font-size:
     .search, .actions, .menu-acoes { width: 100%; }
     .btn { width: 100%; justify-content: center; }
 
-    /* --- 5. CARD DE PRODUTO (LAYOUT DE CARTÃO) --- */
-    .list-header { display: none; }
+    /* --- 5. LISTA DE PRODUTOS (CARDS) --- */
+    .list-header { display: none; } /* Remove cabeçalho da tabela */
 
     .row-card {
         display: flex;
         flex-direction: column;
-        align-items: center; /* Centraliza tudo */
+        align-items: center;
         text-align: center;
-        gap: 12px;
         padding: 20px;
+        gap: 8px;
         position: relative;
     }
 
-    /* Pílula de índice */
-    .index-pill {
-        position: absolute; top: 12px; right: 12px;
-        background: rgba(0,0,0,0.05); font-size: 11px;
-        width: 24px; height: 24px;
-    }
+    /* Imagem Grande */
+    .thumb { width: 100%; height: 160px; margin: 0 0 10px 0; }
+    .thumb img { width: 100%; height: 100%; border-radius: 12px; object-fit: cover; }
 
-    /* Imagem Grande e Bonita */
-    .thumb { width: 100%; height: 140px; margin: 0; }
-    .thumb img { 
-        width: 100%; height: 100%; 
-        object-fit: cover; border-radius: 12px; 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    /* --- AQUI ESTÁ A CORREÇÃO DO NOME --- */
+    /* Nome em Destaque */
     .col { width: 100%; display: block !important; }
-    
-    /* Nome do Produto (Coluna 3) */
     .row-card .col:nth-child(3) input {
+        font-size: 18px !important;
+        font-weight: 800 !important;
         text-align: center;
-        font-size: 20px !important;
-        font-weight: 900 !important;
-        color: var(--text-dark) !important; /* Força cor escura */
-        margin-top: 8px;
-        white-space: normal; /* Permite quebrar linha se nome for grande */
+        color: var(--text-dark);
+        white-space: normal;
     }
 
-    /* Esconde colunas secundárias */
-    /* 2=Peso, 4=Código, 5=Local, 6=Entrada, 7=Validade */
-    .row-card .col:nth-child(2), /* Peso */
-    .row-card .col:nth-child(4), /* Código */
-    .row-card .col:nth-child(6), /* Entrada */
-    .row-card .col:nth-child(7)  /* Validade */
-    { 
+    /* Esconde colunas secundárias no mobile para não poluir */
+    /* (Peso, Código, Entrada, Validade) */
+    .row-card .col:nth-child(2), 
+    .row-card .col:nth-child(4), 
+    .row-card .col:nth-child(6), 
+    .row-card .col:nth-child(7) { 
         display: none !important; 
     }
 
-    /* Mostra Localização (Coluna 5) destacado */
+    /* Localização (Pequeno) */
     .row-card .col:nth-child(5) input {
-        text-align: center;
-        font-size: 13px;
-        color: var(--text-light);
-        background: #f1f5f9;
-        border-radius: 4px;
-        padding: 4px;
-        width: auto !important;
-        display: inline-block;
+        font-size: 12px; color: var(--text-muted); text-align: center;
     }
 
-    /* Barra de Ações (Botões Grandes para Dedo) */
+    /* Ações (Rodapé do Card) */
     .row-card .col:last-child {
         width: 100%;
-        display: flex;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
+        margin-top: 12px;
+        padding-top: 12px;
         border-top: 1px solid #f1f5f9;
-        padding-top: 16px;
-        margin-top: 4px;
     }
-
-    /* Ajuste dos botões para toque */
-    .qty button { width: 36px; height: 36px; font-size: 18px; }
-    .qty div { font-size: 16px; padding: 0 10px; }
+    
+    /* Ajuste dos botões de ação para dedo */
+    .qty button { width: 40px; height: 40px; font-size: 18px; }
+    .qty div { font-size: 16px; padding: 0 12px; }
+    .actions-row { gap: 12px; }
     .gear { width: 40px; height: 40px; font-size: 20px; }
 
-    /* --- 6. MODAIS RESPONSIVOS --- */
+    /* --- 6. MODAIS --- */
     .modal .card {
         width: 95% !important;
-        max-height: 90vh;
+        max-height: 85vh;
         padding: 20px;
     }
-    .modal-actions { flex-direction: column-reverse; }
+    /* Botões do modal empilhados (Salvar em cima, Cancelar embaixo) */
+    .modal-actions { flex-direction: column-reverse; gap: 10px; }
     .modal .btn-primary, .modal .btn-ghost { width: 100%; margin: 0; }
-    
-    /* Tabela Import scrollável */
-    #importTable { display: block; overflow-x: auto; white-space: nowrap; }
 }
